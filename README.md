@@ -1,13 +1,13 @@
 # AMR_prediction
 
 ## Structure of amr_pred.cpp:
-```
-void **read_model** (string antibiotic, vector<string\>& unitigs, vector<double\>& coefs)
+```c++
+void read_model (string antibiotic, vector<string\>& unitigs, vector<double\>& coefs)
 { 
   read .txt file and store unitigs & coefficients in 2 vectors
 }
   
-sds::csa_wt<\> **create_index**(string filepath)
+sds::csa_wt<\> create_index(string filepath)
 {
   open and read fasta file
   generate fm-index
