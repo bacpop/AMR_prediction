@@ -34,8 +34,9 @@ void main()
 {
   //create_index() 
   //for-loop through vector of antibiotics:
-      //read_model()
-      //lookup_unitigs()
+      //read_model() -> vector of coefficients
+      //lookup_unitigs() -> vector of presence/absence
+      //convert vectors to Matrix format
       //calculate dot_product & apply sigmoid function
       //print results
 }
