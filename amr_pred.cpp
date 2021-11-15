@@ -1,6 +1,6 @@
-#include "../Matrix.h"
-#include "../kseq.h"
-#include "../zlib.h"
+#include "./Matrix.h"
+#include "./kseq.h"
+#include "./zlib.h"
 #include <sdsl/suffix_arrays.hpp>
 #include<iostream>
 #include<iomanip>
@@ -11,10 +11,12 @@
 #include<algorithm>
 #include<cassert>
 #include <chrono>
+// #include <emscripten/bind.h> 
 
 KSEQ_INIT(gzFile, gzread)
 
 using namespace std;
+//using namespace emscripten;
 
 void read_model(string antibiotic, vector<string>& unitigs, vector<double>& coefs)
 {
@@ -172,3 +174,14 @@ int main()
 
 
 // g++ -I ~/include -L ~/lib -g amr_pred.cpp -lz -o amr_pred -lsdsl -ldivsufsort -ldivsufsort64
+
+/*
+EMSCRIPTEN_BINDINGS(my_module) {
+    function("read_model", &read_model);
+    function("create_index", &create_index);
+    function("complement", &complement);
+    function("invert", &invert);
+    function("lookup_unitigs", &lookup_unitigs);
+    function("read_model", &read_model);
+}
+*/
