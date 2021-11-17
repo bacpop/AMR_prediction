@@ -1,8 +1,8 @@
 CXX = g++
-CXXFLAGS = -Wall -g -O3 -Wextra
-CPPFLAGS = -I ${HOME}/include
+CXXFLAGS = -Wall -g -O0 
+CPPFLAGS = -I ${HOME}/include -I ${HOME}/cpp_projects/amr_pred
 LDFLAGS = -L ${HOME}/lib  
-LDLIBS = -lz -lsdsl -ldivsufsort -ldivsufsort64
+LDLIBS = -lz #-lsdsl -ldivsufsort -ldivsufsort64
 
 amr_prediction: amr_pred.o
 	$(LINK.cpp) $^ $(LDLIBS) -o $@ 
@@ -11,5 +11,22 @@ clean:
 	$(RM) *.o ~* amr_prediction
 
 
-# works in the command line:
-# g++ -I ~/include -L ~/lib -g amr_pred.cpp -lz -o amr_pred -lsdsl -ldivsufsort -ldivsufsort64
+# web specific options
+web: CXX = em++
+
+web: CXXFLAGS = -O3 -s ASSERTIONS=1  \
+				--bind -s STRICT=1 \
+				-s ALLOW_MEMORY_GROWTH=1 \
+				-s USE_ZLIB=1 \
+				-s "EXPORTED_FUNCTIONS=['_main']" \
+				-s EXPORT_NAME=HelloWorld \
+				-s USE_ZLIB=1 \
+				-Wall -std=c++14 \
+				--preload-file files
+
+WEB_OUT=web/web_amr_prediction
+WEB_OBJS=${WEB_OUT}.js ${WEB_OUT}.html ${WEB_OUT}.wasm
+
+web: amr_pred.o
+	$(LINK.cpp) $^ $(LDLIBS) -o ${WEB_OUT}.js
+	sed -i.old '1s;^;\/* eslint-disable *\/;' ${WEB_OUT}.js
