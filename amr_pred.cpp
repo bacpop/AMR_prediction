@@ -1,6 +1,6 @@
 #include "./Matrix.h"
 #include "./kseq.h"
-#include "./zlib.h"
+#include "./zlib.h" // try including -s KSEQ_INIT(gzFile, gzread) to web options??
 #include <sdsl/suffix_arrays.hpp>
 #include<iostream>
 #include<iomanip>
@@ -11,7 +11,7 @@
 #include<algorithm>
 #include<cassert>
 #include <chrono>
-// #include <emscripten/bind.h> 
+#include <emscripten/bind.h> 
 
 KSEQ_INIT(gzFile, gzread)
 
@@ -21,7 +21,7 @@ using namespace std;
 void read_model(string antibiotic, vector<string>& unitigs, vector<double>& coefs)
 {
     ostringstream filename; //set filepath and open as istream
-    filename<<"/mnt/c/Users/Marie/Documents/Imperial/ResearchAssistant/Model_coefficients/"<<antibiotic<<"_coefficients.txt";
+    filename<<"files/model_coefficients/"<<antibiotic<<"_coefficients.txt";
     ifstream ist {filename.str()};
     if(!ist) perror("Can't open model input file ");
 
@@ -124,7 +124,7 @@ vector<double> lookup_unitigs(sdsl::csa_wt<> fm_index, vector<string> unitigs)
 
 
 
-void main2(string assembly_filename)
+void make_prediction(string assembly_filename)
 {
     auto start = std::chrono::steady_clock::now();
 
@@ -157,16 +157,16 @@ void main2(string assembly_filename)
 
 int main()
 {
-    string id_file = "/mnt/c/Users/Marie/Documents/Imperial/ResearchAssistant/mass_assemblies_ids_short.txt";
+    string id_file = "files/mass_assemblies_ids_short.txt";
     ifstream ist {id_file};
     if(!ist) perror("Can't open file with strain IDs");   
 
     string id;
     while(ist>>id)
     {
-        string assembly_filename = "/mnt/c/Users/Marie/Documents/Imperial/ResearchAssistant/assemblies_mass/"+id+".fa";
+        string assembly_filename = "files/assemblies_mass_short/"+id+".fa";
         cout<<'\n'<<assembly_filename<<'\n';
-        main2(assembly_filename);
+        make_prediction(assembly_filename);
     }
     
    
@@ -175,13 +175,7 @@ int main()
 
 // g++ -I ~/include -L ~/lib -g amr_pred.cpp -lz -o amr_pred -lsdsl -ldivsufsort -ldivsufsort64
 
-/*
+
 EMSCRIPTEN_BINDINGS(my_module) {
-    function("read_model", &read_model);
-    function("create_index", &create_index);
-    function("complement", &complement);
-    function("invert", &invert);
-    function("lookup_unitigs", &lookup_unitigs);
-    function("read_model", &read_model);
+    emscripten::function("make_prediction", &make_prediction);
 }
-*/
