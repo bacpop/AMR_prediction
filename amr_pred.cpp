@@ -15,8 +15,15 @@
 
 KSEQ_INIT(gzFile, gzread)
 
+class Model{
+    public:
+        std::vector<std::string> unitigs;
+        std::vector<double> coefs;
+        void read_model(const std::string&);
 
-void read_model(const std::string& antibiotic, std::vector<std::string>& unitigs, std::vector<double>& coefs)
+};
+
+void Model::read_model(const std::string& antibiotic)
 {
     std::ostringstream filename; //set filepath and open as istream
     filename<<"files/model_coefficients/"<<antibiotic<<"_coefficients.txt";
@@ -133,12 +140,11 @@ void make_prediction(const std::string& assembly_filename)
 
     for(std::string const &antibiotic:antibiotics){ 
 
-        std::vector<std::string> unitigs; //store data from model
-        std::vector<double> coefs;
-        read_model(antibiotic, unitigs, coefs);  //fill vectors
-        Numeric_lib::Matrix<double,1>coefs_mat{&coefs[0], int(coefs.size())}; // translate into Matrix
+        Model thismodel;
+        thismodel.read_model(antibiotic);  //fill vectors
+        Numeric_lib::Matrix<double,1>coefs_mat{&thismodel.coefs[0], int(thismodel.coefs.size())}; // translate into Matrix
 
-        std::vector<double> pa = lookup_unitigs(fm_index, unitigs); // get vector of presence/absence of unitigs
+        std::vector<double> pa = lookup_unitigs(fm_index, thismodel.unitigs); // get vector of presence/absence of unitigs
         Numeric_lib::Matrix<double,1>pa_mat{&pa[0], int(pa.size())}; // translate into Matrix for calculations
 
         double pred = Numeric_lib::dot_product(pa_mat,coefs_mat); // calculate dot product of both Matrices
