@@ -1,6 +1,6 @@
 #include "./Matrix.h"
 #include "./kseq.h"
-#include "./zlib.h" 
+#include <zlib.h>
 #include <sdsl/suffix_arrays.hpp>
 #include<iostream>
 #include<iomanip>
