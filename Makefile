@@ -18,11 +18,14 @@ web: CXXFLAGS = -O3 -s ASSERTIONS=1  \
 				--bind -s STRICT=1 \
 				-s ALLOW_MEMORY_GROWTH=1 \
 				-s USE_ZLIB=1 \
-				-s "EXPORTED_FUNCTIONS=['_main']" \
+				-s "EXPORTED_FUNCTIONS=['_malloc']" \
+				-s 'EXTRA_EXPORTED_RUNTIME_METHODS=["FS"]' \
 				-s EXPORT_NAME=HelloWorld \
-				-s USE_ZLIB=1 \
+				-s MODULARIZE=1 \
 				-Wall -std=c++14 \
 				--preload-file files
+
+web: LDFLAGS = -lnodefs.js -lworkerfs.js
 
 WEB_OUT=web/web_amr_prediction
 WEB_OBJS=${WEB_OUT}.js ${WEB_OUT}.html ${WEB_OUT}.wasm
