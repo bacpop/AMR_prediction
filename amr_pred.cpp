@@ -20,13 +20,19 @@ using json = nlohmann::json;
 KSEQ_INIT(gzFile, gzread)
 
 class Model{
-    public:
         std::vector<std::string> unitigs;
         std::vector<double> coefs;
+    public:
+        std::vector<std::string> getUnitigs();
         void read_model(const std::string&);
         double get_prob(const Numeric_lib::Matrix<double,1>&);
 
 };
+
+std::vector<std::string> Model::getUnitigs(){
+    return unitigs;
+}
+
 
 void Model::read_model(const std::string& antibiotic)
 {
@@ -148,7 +154,7 @@ std::string make_prediction(const std::string& assembly_filename)
         Model thismodel;
         thismodel.read_model(antibiotic);  // create Model containing coefs and unitigs
 
-        Numeric_lib::Matrix<double,1> pa_mat = lookup_unitigs(fm_index, thismodel.unitigs); // get vector of presence/absence of unitigs
+        Numeric_lib::Matrix<double,1> pa_mat = lookup_unitigs(fm_index, thismodel.getUnitigs()); // get vector of presence/absence of unitigs
 
         double probability = thismodel.get_prob(pa_mat); // calculate prob of resistance
 
