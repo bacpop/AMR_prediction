@@ -13,6 +13,10 @@
 #include <chrono>
 #include <emscripten/bind.h> 
 
+#include <nlohmann/json.hpp> // to store results as JSON string that can be passed to web worker
+using json = nlohmann::json;
+
+
 KSEQ_INIT(gzFile, gzread)
 
 class Model{
@@ -129,14 +133,16 @@ Numeric_lib::Matrix<double,1> lookup_unitigs(const sdsl::csa_wt<>& fm_index, con
 }
 
 
-
-void make_prediction(const std::string& assembly_filename)
+std::string make_prediction(const std::string& assembly_filename)
 {
     auto start = std::chrono::steady_clock::now(); // start timer
 
     sdsl::csa_wt<> fm_index = create_index(assembly_filename); // create fm-Index from .fasta file
 
     std::vector<std::string> antibiotics ={"Penicillin","Chloramphenicol","Erythromycin","Tetracycline", "Trim_sulfa"};
+    
+    json results_json;
+
     for(std::string const &antibiotic:antibiotics){ 
 
         Model thismodel;
@@ -147,12 +153,19 @@ void make_prediction(const std::string& assembly_filename)
         double probability = thismodel.get_prob(pa_mat); // calculate prob of resistance
 
         std::cout<<"Probability of resistance to "<<antibiotic<<": "<<probability<<'\n'; 
+
+        results_json[antibiotic] = probability;
+        
     }  
     auto fm_time = std::chrono::steady_clock::now();    //end timer
     std::chrono::duration<double> elapsed_seconds = fm_time-start;
     std::cout << "elapsed total time: " << elapsed_seconds.count() << "s\n";
+
+    std::string result = results_json.dump();
+    return result;
 }
 
+/*
 int main()
 {
     std::string id_file = "files/mass_assemblies_ids_short.txt";
@@ -167,7 +180,9 @@ int main()
         make_prediction(assembly_filename);
     }
 }
+*/
 
 EMSCRIPTEN_BINDINGS(my_module) {        // include bindings for emscripten
     emscripten::function("make_prediction", &make_prediction);
+    emscripten::register_map<std::string,double>("map<string,double>");
 }
