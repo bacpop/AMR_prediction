@@ -15,8 +15,7 @@
 #include <emscripten/bind.h> 
 
 #include <nlohmann/json.hpp> // to store results as JSON string that can be passed to web worker
-using json = nlohmann::json;
-
+using json = nlohmann::ordered_json;
 
 KSEQ_INIT(gzFile, gzread)
 
@@ -98,7 +97,7 @@ Numeric_lib::Matrix<double,1> lookup_unitigs(const sdsl::csa_wt<>& fm_index, con
 }
 
 
-std::string make_prediction(const std::string& assembly_filename)
+std::string make_prediction(std::string assembly_filename)
 {
     auto start = std::chrono::steady_clock::now(); // start timer
 
@@ -107,6 +106,7 @@ std::string make_prediction(const std::string& assembly_filename)
     std::vector<std::string> antibiotics ={"Penicillin","Chloramphenicol","Erythromycin","Tetracycline", "Trim_sulfa"};
     
     json results_json;
+    results_json["filename"] = assembly_filename.erase (0,9);
 
     for(std::string const &antibiotic:antibiotics){ 
 
@@ -115,7 +115,7 @@ std::string make_prediction(const std::string& assembly_filename)
 
         Numeric_lib::Matrix<double,1> pa_mat = lookup_unitigs(fm_index, thismodel.getUnitigs()); // get vector of presence/absence of unitigs
 
-        double probability = thismodel.get_prob(pa_mat); // calculate prob of resistance
+        double probability = round(thismodel.get_prob(pa_mat)*1000.0)/1000.0; // calculate prob of resistance
 
         std::cout<<"Probability of resistance to "<<antibiotic<<": "<<probability<<'\n'; 
 
