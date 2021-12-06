@@ -37,6 +37,8 @@ sdsl::csa_wt<> create_index(std::string filepath)
     kseq_destroy(seq);  // destroy seq and fp objects
     gzclose(fp);
 
+    if(reference_seq.length()<1500000||reference_seq.length()>3000000){abort();} //check if length of sequence is reasonable
+
     sdsl::csa_wt<> ref_index;   //initialise fm-index
 
     auto start_fm = std::chrono::steady_clock::now(); // start timer
@@ -136,7 +138,6 @@ int main()
     std::string id_file = "files/mass_assemblies_ids_short.txt";
     std::ifstream ist {id_file};
     if(!ist) perror("Can't open file with strain IDs");   
-
     std::string id;
     while(ist>>id)      // loop through all IDs in .txt file to make predictions for each
     {
