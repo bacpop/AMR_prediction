@@ -12,14 +12,17 @@
 #include<algorithm>
 #include<cassert>
 #include <chrono>
-#include <emscripten/bind.h> 
 
-#include <nlohmann/json.hpp> // to store results as JSON string that can be passed to web worker
+#ifdef WEB
+#include <emscripten/bind.h> 
+#endif
+
+#include "./src/json.hpp" // to store results as JSON string that can be passed to web worker
 using json = nlohmann::ordered_json;
 
 KSEQ_INIT(gzFile, gzread)
 
-sdsl::csa_wt<> create_index(std::string filepath) 
+std::pair<sdsl::csa_wt<>,bool> create_index(std::string filepath) 
 { 
     gzFile fp = gzopen(filepath.c_str(), "r"); // open the file handler
     if(fp == 0) {
@@ -36,8 +39,8 @@ sdsl::csa_wt<> create_index(std::string filepath)
     }
     kseq_destroy(seq);  // destroy seq and fp objects
     gzclose(fp);
-
-    if(reference_seq.length()<1500000||reference_seq.length()>3000000){abort();} //check if length of sequence is reasonable
+    bool lengthcheck;
+    if(reference_seq.length()<1500000||reference_seq.length()>3000000){lengthcheck=false;} else {lengthcheck=true;}//check if length of sequence is reasonable
 
     sdsl::csa_wt<> ref_index;   //initialise fm-index
 
@@ -49,7 +52,10 @@ sdsl::csa_wt<> create_index(std::string filepath)
     std::chrono::duration<double> elapsed_seconds_fm = end_fm-start_fm;
     std::cout << "elapsed time for creating fm-index: " << elapsed_seconds_fm.count() << "s\n";
 
-    return ref_index;
+    std::pair<sdsl::csa_wt<>,bool> result;
+    result.first=ref_index;
+    result.second=lengthcheck;
+    return result;
 }
 
 char complement(char n)
@@ -103,12 +109,16 @@ std::string make_prediction(std::string assembly_filename)
 {
     auto start = std::chrono::steady_clock::now(); // start timer
 
-    sdsl::csa_wt<> fm_index = create_index(assembly_filename); // create fm-Index from .fasta file
+    //assembly_filename="files/fa_examples/6999_3#3.fa";
+
+    std::pair<sdsl::csa_wt<>,bool> fm_result = create_index(assembly_filename);
+    sdsl::csa_wt<> fm_index = fm_result.first; // create fm-Index from .fasta file
 
     std::vector<std::string> antibiotics ={"Penicillin","Chloramphenicol","Erythromycin","Tetracycline", "Trim_sulfa"};
     
     json results_json;
     results_json["filename"] = assembly_filename.erase (0,9);
+    
 
     for(std::string const &antibiotic:antibiotics){ 
 
@@ -128,27 +138,16 @@ std::string make_prediction(std::string assembly_filename)
     std::chrono::duration<double> elapsed_seconds = fm_time-start;
     std::cout << "elapsed total time: " << elapsed_seconds.count() << "s\n";
 
+    results_json["length"]=fm_result.second;
     std::string result = results_json.dump();
     return result;
 }
 
-/*
-int main()
-{
-    std::string id_file = "files/mass_assemblies_ids_short.txt";
-    std::ifstream ist {id_file};
-    if(!ist) perror("Can't open file with strain IDs");   
-    std::string id;
-    while(ist>>id)      // loop through all IDs in .txt file to make predictions for each
-    {
-        std::string assembly_filename = "files/assemblies_mass_short/"+id+".fa";
-        std::cout<<'\n'<<assembly_filename<<'\n';
-        make_prediction(assembly_filename);
-    }
-}
-*/
-
+#ifndef WEB
+int main(){} //add code to run test
+#else
 EMSCRIPTEN_BINDINGS(my_module) {        // include bindings for emscripten
     emscripten::function("make_prediction", &make_prediction);
     emscripten::register_map<std::string,double>("map<string,double>");
 }
+#endif

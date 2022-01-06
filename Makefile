@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -Wall -g -O0 
-CPPFLAGS = -I ${HOME}/include -I ${HOME}/cpp_projects/amr_pred -I ${HOME}/miniconda3/include
+CPPFLAGS = -I ${HOME}/include -I . -I ${HOME}/miniconda3/include
 LDFLAGS = -L ${HOME}/lib  
 LDLIBS = -lz #-lsdsl -ldivsufsort -ldivsufsort64
 
@@ -13,8 +13,11 @@ clean:
 
 # web specific options
 web: CXX = em++
-
+web: CPPFLAGS += -DWEB
 web: CXXFLAGS = -O3 -s ASSERTIONS=1  \
+				-DJSON_NOEXCEPTION \
+				-s DISABLE_EXCEPTION_CATCHING=1 \
+				-flto \
 				--bind -s STRICT=1 \
 				-s ALLOW_MEMORY_GROWTH=1 \
 				-s USE_ZLIB=1 \
@@ -27,7 +30,7 @@ web: CXXFLAGS = -O3 -s ASSERTIONS=1  \
 
 web: LDFLAGS = -lnodefs.js -lworkerfs.js
 
-WEB_OUT=../../react_projects/AMR_ReactApp/public/web_amr_prediction
+WEB_OUT=./build/web_amr_prediction
 WEB_OBJS=${WEB_OUT}.js ${WEB_OUT}.html ${WEB_OUT}.wasm
 
 web: amr_pred.o
