@@ -50,7 +50,7 @@ std::pair<sdsl::csa_wt<>,bool> create_index(std::string filepath)
     
     auto end_fm = std::chrono::steady_clock::now(); //end timer
     std::chrono::duration<double> elapsed_seconds_fm = end_fm-start_fm;
-    std::cout << "elapsed time for creating fm-index: " << elapsed_seconds_fm.count() << "s\n";
+    //std::cout << "elapsed time for creating fm-index: " << elapsed_seconds_fm.count() << "s\n";
 
     std::pair<sdsl::csa_wt<>,bool> result;
     result.first=ref_index;
@@ -129,14 +129,14 @@ std::string make_prediction(std::string assembly_filename)
 
         double probability = round(thismodel.get_prob(pa_mat)*1000.0)/1000.0; // calculate prob of resistance
 
-        std::cout<<"Probability of resistance to "<<antibiotic<<": "<<probability<<'\n'; 
+        //std::cout<<"Probability of resistance to "<<antibiotic<<": "<<probability<<'\n'; 
 
         results_json[antibiotic] = probability;
         
     }  
     auto fm_time = std::chrono::steady_clock::now();    //end timer
     std::chrono::duration<double> elapsed_seconds = fm_time-start;
-    std::cout << "elapsed total time: " << elapsed_seconds.count() << "s\n";
+    //std::cout << "elapsed total time: " << elapsed_seconds.count() << "s\n";
 
     results_json["length"]=fm_result.second;
     std::string result = results_json.dump();
@@ -144,7 +144,22 @@ std::string make_prediction(std::string assembly_filename)
 }
 
 #ifndef WEB
-int main(){} //add code to run test
+int main(){
+//run test on two sample files
+    std::string result1 = make_prediction("files/fa_examples/6999_3#3.fa.gz");
+    std::string result2 = make_prediction("files/fa_examples/6999_3#5.fa.gz");
+    std::string test_result = result1+result2;
+
+    std::ifstream testfile("files/fa_examples/test_result.txt");
+    std::string true_result((std::istreambuf_iterator<char>(testfile)),
+                            (std::istreambuf_iterator<char>() ) );
+
+    if(test_result==true_result)
+        std::cout<<"Test successful!\n";
+    else
+        std::cout<<"Test failed!\n";
+
+} 
 #else
 EMSCRIPTEN_BINDINGS(my_module) {        // include bindings for emscripten
     emscripten::function("make_prediction", &make_prediction);
