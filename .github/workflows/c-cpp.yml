@@ -14,8 +14,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: make
+      working-directory: ./src
       run: make
 #    - name: make web
 #      run: make web
     - name: make check
+      working-directory: ./src
       run: make check
