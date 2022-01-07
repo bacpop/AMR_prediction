@@ -146,11 +146,11 @@ std::string make_prediction(std::string assembly_filename)
 #ifndef WEB
 int main(){
 //run test on two sample files
-    std::string result1 = make_prediction("files/fa_examples/6999_3#3.fa.gz");
-    std::string result2 = make_prediction("files/fa_examples/6999_3#5.fa.gz");
+    std::string result1 = make_prediction("../files/fa_examples/6999_3#3.fa.gz");
+    std::string result2 = make_prediction("../files/fa_examples/6999_3#5.fa.gz");
     std::string test_result = result1+result2;
 
-    std::ifstream testfile("files/fa_examples/test_result.txt");
+    std::ifstream testfile("../files/fa_examples/test_result.txt");
     std::string true_result((std::istreambuf_iterator<char>(testfile)),
                             (std::istreambuf_iterator<char>() ) );
 
