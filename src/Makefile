@@ -30,7 +30,7 @@ web: CXXFLAGS = -O3 -s ASSERTIONS=1  \
 
 web: LDFLAGS = -lnodefs.js -lworkerfs.js
 
-WEB_OUT=./build/web_amr_prediction
+WEB_OUT=../build/web_amr_prediction
 WEB_OBJS=${WEB_OUT}.js ${WEB_OUT}.html ${WEB_OUT}.wasm
 
 web: amr_pred.o
