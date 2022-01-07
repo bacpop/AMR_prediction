@@ -17,3 +17,5 @@ jobs:
       run: make
 #    - name: make web
 #      run: make web
+    - name: make check
+      run: make check

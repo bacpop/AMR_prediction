@@ -36,3 +36,6 @@ WEB_OBJS=${WEB_OUT}.js ${WEB_OUT}.html ${WEB_OUT}.wasm
 web: amr_pred.o
 	$(LINK.cpp) $^ $(LDLIBS) -o ${WEB_OUT}.js
 	sed -i.old '1s;^;\/* eslint-disable *\/;' ${WEB_OUT}.js
+
+check:
+	./amr_prediction
