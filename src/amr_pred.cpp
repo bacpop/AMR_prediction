@@ -17,7 +17,7 @@
 #include <emscripten/bind.h> 
 #endif
 
-#include "./src/json.hpp" // to store results as JSON string that can be passed to web worker
+#include "./json.hpp" // to store results as JSON string that can be passed to web worker
 using json = nlohmann::ordered_json;
 
 KSEQ_INIT(gzFile, gzread)
