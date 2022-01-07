@@ -23,7 +23,8 @@ jobs:
         ./emsdk install latest
         ./emsdk activate latest
         source ./emsdk_env.sh
-#        make web
+        cd ../src
+        make web
     - name: make check
       working-directory: ./src
       run: make check
