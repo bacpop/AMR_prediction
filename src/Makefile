@@ -33,7 +33,7 @@ web: LDFLAGS = -lnodefs.js -lworkerfs.js
 WEB_OUT=../build/web_amr_prediction
 WEB_OBJS=${WEB_OUT}.js ${WEB_OUT}.html ${WEB_OUT}.wasm
 
-web: amr_pred.o
+web: amr_pred.cpp
 	$(LINK.cpp) $^ $(LDLIBS) -o ${WEB_OUT}.js
 	sed -i.old '1s;^;\/* eslint-disable *\/;' ${WEB_OUT}.js
 
