@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -Wall -g -O0 
-CPPFLAGS = -I ${HOME}/include -I . -I ${HOME}/miniconda3/include
+CPPFLAGS = -I ${HOME}/include -I . -I ..
 LDFLAGS = -L ${HOME}/lib  
 LDLIBS = -lz #-lsdsl -ldivsufsort -ldivsufsort64
 
