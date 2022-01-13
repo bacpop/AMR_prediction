@@ -16,15 +16,15 @@ jobs:
     - name: make
       working-directory: ./src
       run: make
-    - name: make web
-      run: |
-        git clone https://github.com/emscripten-core/emsdk.git
-        cd emsdk
-        ./emsdk install latest
-        ./emsdk activate latest
-        source ./emsdk_env.sh
-        cd ../src
-        make web
+    #- name: make web
+    #  run: |
+    #    git clone https://github.com/emscripten-core/emsdk.git
+    #    cd emsdk
+    #    ./emsdk install latest
+    #    ./emsdk activate latest
+    #    source ./emsdk_env.sh
+    #    cd ../src
+    #    make web
     - name: make check
       working-directory: ./src
       run: make check
