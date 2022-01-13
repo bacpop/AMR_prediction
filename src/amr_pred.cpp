@@ -154,10 +154,14 @@ int main(){
     std::string true_result((std::istreambuf_iterator<char>(testfile)),
                             (std::istreambuf_iterator<char>() ) );
 
-    if(test_result==true_result)
+    if(test_result==true_result){
         std::cout<<"Test successful!\n";
-    else
+        return 0;
+    }
+    else{
         std::cout<<"Test failed!\n";
+        return 1;
+    }
 
 } 
 #else
