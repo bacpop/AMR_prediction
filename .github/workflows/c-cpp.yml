@@ -28,3 +28,8 @@ jobs:
     - name: make check
       working-directory: ./src
       run: make check
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: build
+        path: build
