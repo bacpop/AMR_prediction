@@ -61,10 +61,7 @@ jobs:
       env:
         API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
       with:
-        source_file: |
-          'build/web_amr_prediction.wasm',
-          'build/web_amr_prediction.js',
-          'build/web_amr_prediction.data'
+        source_file: 'build/web_amr_prediction.wasm'
         destination_repo: 'bacpop/AMR_ReactApp'
         destination_branch: 'dev'
         destination_folder: 'public'
