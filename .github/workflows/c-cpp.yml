@@ -61,7 +61,7 @@ jobs:
       env:
         API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
       with:
-        source_file: 'build'
+        source_file: 'build/*'
         destination_repo: 'bacpop/AMR_ReactApp'
         destination_branch: 'dev'
         destination_folder: 'public'
