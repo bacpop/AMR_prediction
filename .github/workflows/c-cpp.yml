@@ -16,15 +16,15 @@ jobs:
     - name: make
       working-directory: ./src
       run: make
-    #- name: make web
-    #  run: |
-    #    git clone https://github.com/emscripten-core/emsdk.git
-    #    cd emsdk
-    #    ./emsdk install latest
-    #    ./emsdk activate latest
-    #    source ./emsdk_env.sh
-    #    cd ../src
-    #    make web
+    - name: make web
+      run: |
+        git clone https://github.com/emscripten-core/emsdk.git
+        cd emsdk
+        ./emsdk install latest
+        ./emsdk activate latest
+        source ./emsdk_env.sh
+        cd ../src
+        make web
     - name: make check
       working-directory: ./src
       run: make check
@@ -50,12 +50,6 @@ jobs:
   #      # Assets to upload to the release
   #      files: build
         
-  copy-file:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
     - name: Push.wasm to React repo
       uses: dmnemec/copy_file_to_another_repo_action@main
       env:
