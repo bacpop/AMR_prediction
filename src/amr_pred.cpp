@@ -11,7 +11,7 @@
 #include<cmath>                                                                                                                                                                                         
 #include<algorithm>
 #include<cassert>
-#include <chrono>
+//#include <chrono>
 
 #ifdef WEB
 #include <emscripten/bind.h> 
@@ -44,12 +44,12 @@ std::pair<sdsl::csa_wt<>,bool> create_index(std::string filepath)
 
     sdsl::csa_wt<> ref_index;   //initialise fm-index
 
-    auto start_fm = std::chrono::steady_clock::now(); // start timer
+    //auto start_fm = std::chrono::steady_clock::now(); // start timer
 
     sdsl::construct_im(ref_index, reference_seq, 1); // generate fm-index
     
-    auto end_fm = std::chrono::steady_clock::now(); //end timer
-    std::chrono::duration<double> elapsed_seconds_fm = end_fm-start_fm;
+    //auto end_fm = std::chrono::steady_clock::now(); //end timer
+    //std::chrono::duration<double> elapsed_seconds_fm = end_fm-start_fm;
     //std::cout << "elapsed time for creating fm-index: " << elapsed_seconds_fm.count() << "s\n";
 
     std::pair<sdsl::csa_wt<>,bool> result;
@@ -90,7 +90,7 @@ bool check_species(const sdsl::csa_wt<>& fm_index){
 
     //1st check: pneumo sequences present
 
-    std::string filename_pneumo= "../files/species_check/unitigs_pneumo.txt"; 
+    std::string filename_pneumo= "./files/species_check/unitigs_pneumo.txt"; 
     std::ifstream ist_p {filename_pneumo};
     if(!ist_p) perror("Can't open species check input file ");
 
@@ -115,7 +115,7 @@ bool check_species(const sdsl::csa_wt<>& fm_index){
     //2nd check: non-pneumo sequences absent
 
     if(result==true){
-        std::string filename_non_pneumo= "../files/species_check/unitigs_non_pneumo.txt"; 
+        std::string filename_non_pneumo= "./files/species_check/unitigs_non_pneumo.txt"; 
         std::ifstream ist_np {filename_non_pneumo};
         if(!ist_np) perror("Can't open species check input file ");
 
@@ -164,7 +164,7 @@ Numeric_lib::Matrix<double,1> lookup_unitigs(const sdsl::csa_wt<>& fm_index, con
 
 std::string make_prediction(std::string assembly_filename)
 {
-    auto start = std::chrono::steady_clock::now(); // start timer
+    //auto start = std::chrono::steady_clock::now(); // start timer
 
     //assembly_filename="files/fa_examples/6999_3#3.fa";
 
@@ -194,8 +194,8 @@ std::string make_prediction(std::string assembly_filename)
             results_json[antibiotic] = probability;
             
         }  
-        auto fm_time = std::chrono::steady_clock::now();    //end timer
-        std::chrono::duration<double> elapsed_seconds = fm_time-start;
+        //auto fm_time = std::chrono::steady_clock::now();    //end timer
+        //std::chrono::duration<double> elapsed_seconds = fm_time-start;
         //std::cout << "elapsed total time: " << elapsed_seconds.count() << "s\n";
 
         results_json["length"]=fm_result.second;
@@ -218,11 +218,11 @@ std::string make_prediction(std::string assembly_filename)
 #ifndef WEB
 int main(){
 //run test on two sample files
-    std::string result1 = make_prediction("../files/fa_examples/6999_3#3.fa.gz");
-    std::string result2 = make_prediction("../files/fa_examples/6999_3#5.fa.gz");
+    std::string result1 = make_prediction("./files/fa_examples/6999_3#3.fa.gz");
+    std::string result2 = make_prediction("./files/fa_examples/6999_3#5.fa.gz");
     std::string test_result = result1+result2;
 
-    std::ifstream testfile("../files/fa_examples/test_result.txt");
+    std::ifstream testfile("./files/fa_examples/test_result.txt");
     std::string true_result((std::istreambuf_iterator<char>(testfile)),
                             (std::istreambuf_iterator<char>() ) );
 

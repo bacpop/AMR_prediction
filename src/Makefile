@@ -26,7 +26,7 @@ web: CXXFLAGS = -O3 -s ASSERTIONS=1  \
 				-s EXPORT_NAME=AMRprediction \
 				-s MODULARIZE=1 \
 				-Wall -std=c++14 \
-				--preload-file ../files
+				--preload-file ./files
 
 web: LDFLAGS = -lnodefs.js -lworkerfs.js
 
