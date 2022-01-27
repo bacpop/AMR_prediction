@@ -86,6 +86,63 @@ std::string invert(std::string seq)
     return seq;
 }
 
+bool check_species(const sdsl::csa_wt<>& fm_index){
+
+    //1st check: pneumo sequences present
+
+    std::string filename_pneumo= "../files/species_check/unitigs_pneumo.txt"; 
+    std::ifstream ist_p {filename_pneumo};
+    if(!ist_p) perror("Can't open species check input file ");
+
+    std::string unitig;
+    std::vector<std::string> unitigs;
+    while (ist_p>>unitig)   //fill unitigs in vector
+    {   
+        unitigs.push_back(unitig);
+    }
+
+    bool result = true;
+    for(int i=0; i<unitigs.size(); ++i){
+
+        int c = count(fm_index,unitigs[i]);
+        if (c==0) {
+            int c2 = count(fm_index,invert(unitigs[i]));//check reverse sequence
+            if (c2==0){result=false; break;} //exit loop if any unitig is not found
+        }
+         
+    }
+
+    //2nd check: non-pneumo sequences absent
+
+    if(result==true){
+        std::string filename_non_pneumo= "../files/species_check/unitigs_non_pneumo.txt"; 
+        std::ifstream ist_np {filename_non_pneumo};
+        if(!ist_np) perror("Can't open species check input file ");
+
+        std::string kmer;
+        std::vector<std::string> kmers;
+        while (ist_np>>kmer)   //fill unitigs in vector
+        {   
+            kmers.push_back(kmer);
+        }
+
+        for(int i=0; i<kmers.size(); ++i){
+
+            int c = count(fm_index,kmers[i]);
+            if (c==0) {
+                int c2 = count(fm_index,invert(kmers[i]));//check reverse sequence
+                if (c2!=0){result=false; break;} //exit loop if any unitig is not found
+            } else {result=false; break;}
+            
+        }
+    }
+    
+
+
+
+    return result;
+}
+
 Numeric_lib::Matrix<double,1> lookup_unitigs(const sdsl::csa_wt<>& fm_index, const std::vector<std::string>& unitigs)
 {
     Numeric_lib::Matrix<double,1> pa_mat{int(unitigs.size())}; // Matrix to store presence/absence
@@ -114,32 +171,47 @@ std::string make_prediction(std::string assembly_filename)
     std::pair<sdsl::csa_wt<>,bool> fm_result = create_index(assembly_filename);
     sdsl::csa_wt<> fm_index = fm_result.first; // create fm-Index from .fasta file
 
+    bool check = check_species(fm_index); //perform species check, returns true if pneumo
+
     std::vector<std::string> antibiotics ={"Penicillin","Chloramphenicol","Erythromycin","Tetracycline", "Trim_sulfa"};
     
     json results_json;
     results_json["filename"] = assembly_filename.erase (0,9);
-    
 
-    for(std::string const &antibiotic:antibiotics){ 
+    if(check==true){
 
-        Model thismodel;
-        thismodel.read_model(antibiotic);  // create Model containing coefs and unitigs
+        for(std::string const &antibiotic:antibiotics){ 
 
-        Numeric_lib::Matrix<double,1> pa_mat = lookup_unitigs(fm_index, thismodel.getUnitigs()); // get vector of presence/absence of unitigs
+            Model thismodel;
+            thismodel.read_model(antibiotic);  // create Model containing coefs and unitigs
 
-        double probability = round(thismodel.get_prob(pa_mat)*1000.0)/1000.0; // calculate prob of resistance
+            Numeric_lib::Matrix<double,1> pa_mat = lookup_unitigs(fm_index, thismodel.getUnitigs()); // get vector of presence/absence of unitigs
 
-        //std::cout<<"Probability of resistance to "<<antibiotic<<": "<<probability<<'\n'; 
+            double probability = round(thismodel.get_prob(pa_mat)*1000.0)/1000.0; // calculate prob of resistance
 
-        results_json[antibiotic] = probability;
+            //std::cout<<"Probability of resistance to "<<antibiotic<<": "<<probability<<'\n'; 
+
+            results_json[antibiotic] = probability;
+            
+        }  
+        auto fm_time = std::chrono::steady_clock::now();    //end timer
+        std::chrono::duration<double> elapsed_seconds = fm_time-start;
+        //std::cout << "elapsed total time: " << elapsed_seconds.count() << "s\n";
+
+        results_json["length"]=fm_result.second;
+        results_json["species"]=true;
         
-    }  
-    auto fm_time = std::chrono::steady_clock::now();    //end timer
-    std::chrono::duration<double> elapsed_seconds = fm_time-start;
-    //std::cout << "elapsed total time: " << elapsed_seconds.count() << "s\n";
 
-    results_json["length"]=fm_result.second;
+    } else {
+
+        results_json["species"]=false;
+
+    }
+
     std::string result = results_json.dump();
+
+    std::cout << result;
+
     return result;
 }
 
