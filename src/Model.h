@@ -13,7 +13,7 @@ class Model{
         {
             //std::ostringstream filename; //set filepath and open as istream
             //filename<<"files/model_coefficients/"<<antibiotic<<"_coefficients.txt";
-            std::string filename= "../files/model_coefficients/"+antibiotic+"_coefficients.txt"; // more or less efficient?? other alternative: .append()
+            std::string filename= "./files/model_coefficients/"+antibiotic+"_coefficients.txt"; // more or less efficient?? other alternative: .append()
             std::ifstream ist {filename};
             if(!ist) perror("Can't open model input file ");
 
