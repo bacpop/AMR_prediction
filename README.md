@@ -12,6 +12,6 @@ Coefficients for the models have been derived from logistic [ElasticNet](https:/
 
 ## Testing
 
-Two example FASTA-files are provided in `files/`.
+Two example FASTA-files are provided in `files/fa_examples`.
 
-...some more text here...
+The GitHub workflow C/C++ CI will run a test comparing the generated results to the expected results stored in `test_result.txt`.
