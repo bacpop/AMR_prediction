@@ -51,32 +51,6 @@ jobs:
   #      # Assets to upload to the release
   #      files: build
         
-  #  - name: Push.wasm to React repo
-  #    uses: dmnemec/copy_file_to_another_repo_action@main
-  #    env:
-  #      API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-  #    with:
-  #      source_file: 'build/web_amr_prediction.wasm'
-  #      destination_repo: 'bacpop/AMR_ReactApp'
-  #      destination_branch: 'dev'
-  #      destination_folder: 'public'
-  #      user_email: ${{ secrets.SECRET_M }}
-  #      user_name: ${{ secrets.SECRET_N }}
-  #      commit_message: 'Update to most recent version of WebAssembly code'
-        
-  #  - name: Push .js to React repo
-  #    uses: dmnemec/copy_file_to_another_repo_action@main
-  #    env:
-  #      API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-  #    with:
-  #      source_file: 'build/web_amr_prediction.js'
-  #      destination_repo: 'bacpop/AMR_ReactApp'
-  #      destination_branch: 'dev'
-  #      destination_folder: 'public'
-  #      user_email: ${{ secrets.SECRET_M }}
-  #      user_name: ${{ secrets.SECRET_N }}
-  #      commit_message: 'Update to most recent version of WebAssembly code'
-        
 #    - name: Push .data to React repo
 #      uses: dmnemec/copy_file_to_another_repo_action@main
 #      env:
@@ -102,4 +76,30 @@ jobs:
         destination_head_branch: 'dev'
         user_email: ${{ secrets.SECRET_M }}
         user_name: ${{ secrets.SECRET_N }}
-      
+        
+    - name: Push.wasm to React repo
+      uses: dmnemec/copy_file_to_another_repo_action@main
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      with:
+        source_file: 'build/web_amr_prediction.wasm'
+        destination_repo: 'bacpop/AMR_ReactApp'
+        destination_branch: 'dev'
+        destination_folder: 'public'
+        user_email: ${{ secrets.SECRET_M }}
+        user_name: ${{ secrets.SECRET_N }}
+        commit_message: 'Update to most recent version of WebAssembly code'
+       
+    - name: Push .js to React repo
+      uses: dmnemec/copy_file_to_another_repo_action@main
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      with:
+        source_file: 'build/web_amr_prediction.js'
+        destination_repo: 'bacpop/AMR_ReactApp'
+        destination_branch: 'dev'
+        destination_folder: 'public'
+        user_email: ${{ secrets.SECRET_M }}
+        user_name: ${{ secrets.SECRET_N }}
+        commit_message: 'Update to most recent version of WebAssembly code'
+     
