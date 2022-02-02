@@ -27,7 +27,7 @@ struct Matrix_error {
 
 inline void error(const char* p)
 {
-    throw Matrix_error(p);
+    abort();
 }
 
 //-----------------------------------------------------------------------------
