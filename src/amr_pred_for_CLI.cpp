@@ -12,14 +12,6 @@
 #include<algorithm>
 #include<cassert>
 
-#ifdef WEB
-#include <emscripten/bind.h> 
-#endif
-
-/// to store results as JSON string that can be passed to web worker
-#include "./json.hpp" 
-using json = nlohmann::ordered_json;
-
 KSEQ_INIT(gzFile, gzread)
 
 /**
@@ -222,12 +214,13 @@ Numeric_lib::Matrix<double,1> lookup_unitigs(const sdsl::csa_wt<>& fm_index, con
 /**
  * Make prediction for AMR to 5 antibiotics: 
  * "Penicillin","Chloramphenicol","Erythromycin","Tetracycline", "Trim_sulfa"
- * Results are stored in json string to be used in a web browser.
+ * Results are stored in a string that can be added as new row to a csv file
  * 
  * @param assembly_filename filename of the .fasta file
- * @return std::string json string with prediction results
+ * @param antibiotics vector of antibiotics to be tested
+ * @return std::string comma separated restlts
  */
-std::string make_prediction(std::string assembly_filename)
+std::string make_prediction(std::string assembly_filename, std::vector<std::string> antibiotics)
 {
     /// generate fm-index from .fasta file to look up unitigs
     std::pair<sdsl::csa_wt<>,bool> fm_result = create_index(assembly_filename);
@@ -236,70 +229,73 @@ std::string make_prediction(std::string assembly_filename)
     /// perform species check
     bool check = check_species(fm_index);
 
-    /// define set of antibiotics to be tested
-    std::vector<std::string> antibiotics ={"Penicillin","Chloramphenicol","Erythromycin","Tetracycline", "Trim_sulfa"};
-    
-    /// initialise json object
-    json results_json;
-
-    /// since the webworker stores files in '/working/', we delete this added bit of text from the filename
-    results_json["filename"] = assembly_filename.erase (0,9);
+    /// store all results in a string separated by commas, to add to a csv file
+    std::string result_row;
+    result_row.append(assembly_filename+",");
 
     /// if species check was successful, make predictions forr all antibiotics
     if(check==true){
         for(std::string const &antibiotic:antibiotics){ 
             /// create Model containing unitigs and their coefficients from the Elastic Net models
             Model thismodel;
-            thismodel.read_model(antibiotic);  
+            thismodel.read_model(antibiotic);
             /// get vector of presence/absence of unitigs
             Numeric_lib::Matrix<double,1> pa_mat = lookup_unitigs(fm_index, thismodel.getUnitigs());
             /// calculate prob of resistance
-            double probability = round(thismodel.get_prob(pa_mat)*1000.0)/1000.0; 
-            results_json[antibiotic] = probability;
-        }  
-        results_json["length"]=fm_result.second;
-        results_json["species"]=true;
+            double probability = round(thismodel.get_prob(pa_mat)*1000.0)/1000.0;
+            result_row.append(std::to_string(probability)+",");
+        }
+        /// adding length and species check result
+        result_row.append(std::to_string(fm_result.second)+",");
+        result_row.append("1,");
     } else {
-        results_json["species"]=false;
+        /// only reporting species check result for failed species test
+        result_row.append("-,-,-,-,-,-,0,");
     }
-    std::string result = results_json.dump();
-    return result;
+    return result_row;
 }
 
-#ifndef WEB
-/**
- * To run tests, the main function runs predictions on 2 example fasta files.
- * For the WebAssembly code, we do not need this main function
- * 
- * @return int 
- */
-int main(){
-    std::string result1 = make_prediction("./files/fa_examples/6999_3#3.fa.gz");
-    std::string result2 = make_prediction("./files/fa_examples/6999_3#5.fa.gz");
-    std::string test_result = result1+result2;
-
-    std::ifstream testfile("./files/fa_examples/test_result.txt");
-    std::string true_result((std::istreambuf_iterator<char>(testfile)),
-                            (std::istreambuf_iterator<char>() ) );
-
-    if(test_result==true_result){
-        std::cout<<"Test successful!\n";
-        return 0;
+int main(int argc, char** argv){
+    /// read in txt file that lists all .fasta files to be checked
+    std::string id_file = argv[1];
+    std::ifstream ist {id_file};
+    if(!ist) perror("Can't open file with filenames");  
+    /// get total line count of file to display progress
+    std::string line;
+    int total_count=0;
+    while(ist.peek()!=EOF)
+    {
+        getline(ist, line);
+        total_count++;
     }
-    else{
-        std::cout<<"Test failed!\n";
-        return 1;
+    ist.clear();
+    ist.seekg(0);
+    /// define set of antibiotics to be tested
+    std::vector<std::string> antibiotics ={"Penicillin","Chloramphenicol","Erythromycin","Tetracycline", "Trim_sulfa"};
+    /// generate header row for csv file
+    std::string header_row;
+    header_row.append("Filename,");
+    for(std::string const &antibiotic:antibiotics){
+        header_row.append(antibiotic+",");
     }
-
-} 
-#else
-/**
- * When compiled with emscripten to generate a WebAssembly Script
- * we need these bindings so the webworker can access the make_prediction()
- * function.
- */
-EMSCRIPTEN_BINDINGS(my_module) {
-    emscripten::function("make_prediction", &make_prediction);
-    emscripten::register_map<std::string,double>("map<string,double>");
+    header_row.append("length,");
+    header_row.append("species,");
+    header_row.append("\n");
+    /// generate csv file
+    std::ofstream myfile;
+    myfile.open ("AMR_prediction_"+id_file+".csv");
+    myfile << header_row;
+    /// loop through all files in .txt file to make predictions for each
+    int current_count=0;
+    std::string filepath;
+    while(ist>>filepath)
+    {
+        current_count++;
+        std::cout<<"processing sample "<<current_count<<" of "<<total_count<<'\n';
+        std::string result_row = make_prediction(filepath, antibiotics);
+        /// add prediction results
+        myfile << result_row+"\n";
+    }
+    myfile.close();
+    std::cout<<"Results saved in AMR_prediction_"<<id_file<<".csv\n";
 }
-#endif
