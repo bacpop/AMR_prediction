@@ -10,6 +10,8 @@ amr_prediction: amr_pred.o
 clean:
 	$(RM) *.o ~* amr_prediction
 
+amr_pred_for_CLI: amr_pred_for_CLI.o
+	$(LINK.cpp) $^ $(LDLIBS) -o $@ 
 
 # web specific options
 web: CXX = em++
