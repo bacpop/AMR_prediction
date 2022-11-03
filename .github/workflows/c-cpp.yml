@@ -64,42 +64,42 @@ jobs:
 #        user_name: ${{ secrets.SECRET_N }}
 #        commit_message: 'Update to most recent version of WebAssembly code'
         
-    - name: Push .data to React repo and create pull request
-      uses: paygoc6/action-pull-request-another-repo@v1.0.1
-      env:
-        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-      with:
-        source_folder: 'build/web_amr_prediction.data'
-        destination_repo: 'bacpop/AMR_ReactApp'
-        destination_folder: 'public'
-        destination_base_branch: 'main'
-        destination_head_branch: 'dev'
-        user_email: ${{ secrets.SECRET_M }}
-        user_name: ${{ secrets.SECRET_N }}
+    # - name: Push .data to React repo and create pull request
+    #   uses: paygoc6/action-pull-request-another-repo@v1.0.1
+    #   env:
+    #     API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+    #   with:
+    #     source_folder: 'build/web_amr_prediction.data'
+    #     destination_repo: 'bacpop/AMR_ReactApp'
+    #     destination_folder: 'public'
+    #     destination_base_branch: 'main'
+    #     destination_head_branch: 'dev'
+    #     user_email: ${{ secrets.SECRET_M }}
+    #     user_name: ${{ secrets.SECRET_N }}
         
-    - name: Push.wasm to React repo
-      uses: dmnemec/copy_file_to_another_repo_action@main
-      env:
-        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-      with:
-        source_file: 'build/web_amr_prediction.wasm'
-        destination_repo: 'bacpop/AMR_ReactApp'
-        destination_branch: 'dev'
-        destination_folder: 'public'
-        user_email: ${{ secrets.SECRET_M }}
-        user_name: ${{ secrets.SECRET_N }}
-        commit_message: 'Update to most recent version of WebAssembly code'
+    # - name: Push.wasm to React repo
+    #   uses: dmnemec/copy_file_to_another_repo_action@main
+    #   env:
+    #     API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+    #   with:
+    #     source_file: 'build/web_amr_prediction.wasm'
+    #     destination_repo: 'bacpop/AMR_ReactApp'
+    #     destination_branch: 'dev'
+    #     destination_folder: 'public'
+    #     user_email: ${{ secrets.SECRET_M }}
+    #     user_name: ${{ secrets.SECRET_N }}
+    #     commit_message: 'Update to most recent version of WebAssembly code'
        
-    - name: Push .js to React repo
-      uses: dmnemec/copy_file_to_another_repo_action@main
-      env:
-        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-      with:
-        source_file: 'build/web_amr_prediction.js'
-        destination_repo: 'bacpop/AMR_ReactApp'
-        destination_branch: 'dev'
-        destination_folder: 'public'
-        user_email: ${{ secrets.SECRET_M }}
-        user_name: ${{ secrets.SECRET_N }}
-        commit_message: 'Update to most recent version of WebAssembly code'
+    # - name: Push .js to React repo
+    #   uses: dmnemec/copy_file_to_another_repo_action@main
+    #   env:
+    #     API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+    #   with:
+    #     source_file: 'build/web_amr_prediction.js'
+    #     destination_repo: 'bacpop/AMR_ReactApp'
+    #     destination_branch: 'dev'
+    #     destination_folder: 'public'
+    #     user_email: ${{ secrets.SECRET_M }}
+    #     user_name: ${{ secrets.SECRET_N }}
+    #     commit_message: 'Update to most recent version of WebAssembly code'
      
