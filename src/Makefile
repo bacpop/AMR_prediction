@@ -1,16 +1,16 @@
 CXX = g++
-CXXFLAGS = -Wall -g -O0 
+CXXFLAGS = -Wall -g -O3 
 CPPFLAGS = -I ${HOME}/include -I . -I ..
 LDFLAGS = -L ${HOME}/lib  
 LDLIBS = -lz #-lsdsl -ldivsufsort -ldivsufsort64
 
-amr_prediction: amr_pred.o
+amr_prediction: amr_pred_functions.o amr_pred.o
 	$(LINK.cpp) $^ $(LDLIBS) -o $@ 
 
 clean:
 	$(RM) *.o ~* amr_prediction
 
-amr_pred_for_CLI: amr_pred_for_CLI.o
+amr_for_CLI: amr_pred_functions.o amr_pred_for_CLI.o
 	$(LINK.cpp) $^ $(LDLIBS) -o $@ 
 
 # web specific options
@@ -35,7 +35,7 @@ web: LDFLAGS = -lnodefs.js -lworkerfs.js
 WEB_OUT=../build/web_amr_prediction
 WEB_OBJS=${WEB_OUT}.js ${WEB_OUT}.html ${WEB_OUT}.wasm
 
-web: amr_pred.cpp
+web: amr_pred_functions.cpp
 	$(LINK.cpp) $^ $(LDLIBS) -o ${WEB_OUT}.js
 	sed -i.old '1s;^;\/* eslint-disable *\/;' ${WEB_OUT}.js
 
