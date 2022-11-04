@@ -1,4 +1,4 @@
-files/fa_examples/6999_3#3.fa.gz
-files/fa_examples/6999_3#5.fa.gz
-files/fa_examples/6930_8#12.fa
-files/fa_examples/GPSC1_reference.fasta
+test/fa_examples/6999_3#3.fa.gz
+test/fa_examples/6999_3#5.fa.gz
+test/fa_examples/6930_8#12.fa
+test/fa_examples/GPSC1_reference.fasta
