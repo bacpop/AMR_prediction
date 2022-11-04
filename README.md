@@ -38,7 +38,7 @@ From the `/src` folder run the following command to compile the script:
 ```
 make amr_for_CLI
 ```
-You'll need a .txt file listing all files you want to process including their path from your current directory (src). An example can be seen in `file_list.txt`, which lists all .fasta files that are stored in the folder `/files/fa-examples`. 
+You'll need a .txt file listing all files you want to process including their path from your current directory (src). An example can be seen in `file_list.txt`, which lists all .fasta files that are stored in the folder `/test/fa-examples`. 
 
 To run the prediction model, run
 ```
